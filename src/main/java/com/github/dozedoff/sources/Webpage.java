@@ -32,6 +32,7 @@ import com.github.dozedoff.media.ResultLink;
 
 public class Webpage {
 	private int id;
+	private String name;
 	private String elementRegex;
 	private String baseUrl;
 	private String pagePattern;
@@ -47,8 +48,9 @@ public class Webpage {
 	public Webpage() {}
 
 	
-	public Webpage(String baseUrl, String pagePattern, int numOfPages,
+	public Webpage(String name, String baseUrl, String pagePattern, int numOfPages,
 			String elementRegex) {
+		this.name = name;
 		this.baseUrl = baseUrl;
 		this.pagePattern = pagePattern;
 		this.numOfPages = numOfPages;

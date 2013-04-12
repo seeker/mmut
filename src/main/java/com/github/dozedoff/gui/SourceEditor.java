@@ -20,15 +20,21 @@ package com.github.dozedoff.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.dozedoff.db.Persistence;
+import com.github.dozedoff.sources.Webpage;
 
 public class SourceEditor extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -63,13 +69,33 @@ public class SourceEditor extends JFrame {
 		sourcePanel.revalidate();
 	}
 	
+	private void createAddSourceDialog() {
+		JTextField sourceName = new JTextField();
+		JTextField sourceUrl = new JTextField();
+		JTextField cssSelector = new JTextField();
+		Object[] message = {"Source name: ", sourceName, "Source URL: ", sourceUrl, "CSS selector: ", cssSelector};
+		JOptionPane pane = new JOptionPane(message,  JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		JDialog getTopicDialog =  pane.createDialog(null, "Add source");
+		getTopicDialog.setVisible(true);
+		
+		if(pane.getValue() != null && (int)pane.getValue() == JOptionPane.OK_OPTION) {
+			logger.info("Adding new source {} with URL {}", sourceName.getText(), sourceUrl.getText());
+			//TODO add input validation
+			//TODO update dialog for other parameters
+			Webpage page = new Webpage(sourceName.getText(), sourceUrl.getText(), "", 1, cssSelector.getText());
+			Persistence.getInstance().saveWebpage(page);
+		} else {
+			logger.info("User aborted source entry");
+		}
+	}
+	
 	private void setupPopupmenu() {
 		sourcePopup = new JPopupMenu();
 		sourceCreateMenuItem = new JMenuItem("Create");
 		sourceCreateMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new AddSource().setVisible(true);
+				createAddSourceDialog();
 			}
 		});
 		
@@ -78,7 +104,7 @@ public class SourceEditor extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
+				logger.warn("Method not implemented!");
 			}
 		});
 		

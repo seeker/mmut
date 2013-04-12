@@ -20,11 +20,14 @@ package com.github.dozedoff.db;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.dozedoff.sources.Webpage;
 
 public class Persistence {
 	private static Persistence instance = null;
-	
+	private static Logger logger = LoggerFactory.getLogger(Persistence.class);
 	private Persistence() {}
 	
 	public static Persistence getInstance() {
@@ -37,15 +40,18 @@ public class Persistence {
 	
 	public void saveWebpage(Webpage page) {
 		//TODO method stub
+		logger.warn("Method not implemented!");
 	}
 	
 	public List<Webpage> loadWebpage() {
 		LinkedList<Webpage> pages = new LinkedList<Webpage>();
 		//TODO method stub
+		logger.warn("Method not implemented!");
 		return pages;
 	}
 	
 	public void deleteWebpage(Webpage page) {
 		//TODO method stub
+		logger.warn("Method not implemented!");
 	}
 }
