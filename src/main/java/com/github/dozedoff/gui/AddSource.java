@@ -17,6 +17,7 @@
 */
 package com.github.dozedoff.gui;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 
 import org.slf4j.Logger;
@@ -24,15 +25,20 @@ import org.slf4j.LoggerFactory;
 
 import net.miginfocom.swing.MigLayout;
 
-public class AddSource extends JFrame {
+public class AddSource extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerFactory.getLogger(AddSource.class);
 	
 	public AddSource() {
 		logger.info("Creating window {}", this.getClass().getCanonicalName());
+		setupDialog();
+		this.setVisible(true);
+	}
+	
+	private void setupDialog() {
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setLayout(new MigLayout());
-		this.setSize(300,300);
-		this.setVisible(true);
+		this.setSize(300, 300);
+		this.setModalityType(ModalityType.APPLICATION_MODAL);
 	}
 }
