@@ -17,18 +17,6 @@
 */
 package com.github.dozedoff.sources;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import com.github.dozedoff.media.ResultLink;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -47,15 +35,11 @@ public class Webpage {
 	@DatabaseField(canBeNull=false)
 	private int numOfPages;
 	
-	
-	private final int HTTP_TIMEOUT = 5000;
-	
 	/**
 	 * Intended for DAO
 	 */
 	@Deprecated
 	public Webpage() {}
-
 	
 	public Webpage(String name, String baseUrl, String pagePattern, int numOfPages,
 			String elementRegex) {
@@ -65,41 +49,49 @@ public class Webpage {
 		this.numOfPages = numOfPages;
 		this.elementRegex = elementRegex;
 	}
-
-
-	public List<ResultLink> getLinks() throws MalformedURLException {
-		LinkedList<ResultLink> links = new LinkedList<ResultLink>();
-		LinkedList<URL> pageUrls = makePageUrls();
-		
-		for(URL u : pageUrls){
-			
-		}
-		return links;
-	}
-	
-	private LinkedList<ResultLink> parsePage(URL url) throws IOException {
-		LinkedList<ResultLink> links = new LinkedList<ResultLink>();
-		Document page = Jsoup.parse(url, HTTP_TIMEOUT);
-		Elements entries = page.select(elementRegex);
-		
-		for(Element entry : entries) {
-			//TODO get href name and link
-			
-			
-		}
-		
-		return links;
-	}
-
-	private LinkedList<URL> makePageUrls() throws MalformedURLException {
-		// TODO generate URLs from baseUrl and page pattern with numOfPages
-		LinkedList<URL> urls = new LinkedList<URL>();
-		urls.add(new URL(baseUrl));
-		return urls;
-	}
 	
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getElementRegex() {
+		return elementRegex;
+	}
+
+	public void setElementRegex(String elementRegex) {
+		this.elementRegex = elementRegex;
+	}
+
+	public String getBaseUrl() {
+		return baseUrl;
+	}
+
+	public void setBaseUrl(String baseUrl) {
+		this.baseUrl = baseUrl;
+	}
+
+	public String getPagePattern() {
+		return pagePattern;
+	}
+
+	public void setPagePattern(String pagePattern) {
+		this.pagePattern = pagePattern;
+	}
+
+	public int getNumOfPages() {
+		return numOfPages;
+	}
+
+	public void setNumOfPages(int numOfPages) {
+		this.numOfPages = numOfPages;
 	}
 }
