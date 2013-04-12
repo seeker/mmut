@@ -15,19 +15,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.github.dozedoff.app;
+package com.github.dozedoff.results;
 
 public class MediaResult {
 	private String mediaName;
-	private String url;
 	
 	private boolean downloaded = false;
 	private boolean ignored = false;
 	
-	public MediaResult(String mediaName, String url) {
-		super();
+	public MediaResult(String mediaName) {
 		this.mediaName = mediaName;
-		this.url = url;
 	}
 
 	public boolean isDownloaded() {
