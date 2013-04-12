@@ -34,7 +34,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
 public class Webpage {
-	@DatabaseField(id=true)
+	@DatabaseField(generatedId=true)
 	private int id;
 	@DatabaseField(canBeNull=false)
 	private String name;
@@ -96,5 +96,10 @@ public class Webpage {
 		LinkedList<URL> urls = new LinkedList<URL>();
 		urls.add(new URL(baseUrl));
 		return urls;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 }

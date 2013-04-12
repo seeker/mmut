@@ -61,15 +61,23 @@ public class Persistence {
 	}
 	
 	public List<Webpage> loadWebpage() {
-		LinkedList<Webpage> pages = new LinkedList<Webpage>();
-		//TODO method stub
-		logger.warn("Method not implemented!");
+		List<Webpage> pages = new LinkedList<Webpage>();
+		try {
+			pages = webPageDao.queryForAll();
+			logger.info("Loaded {} source entries", pages.size());
+		} catch (SQLException e) {
+			logger.warn("Failed to load sources {}", e);
+		}
+		
 		return pages;
 	}
 	
 	public void deleteWebpage(Webpage page) {
-		//TODO method stub
-		logger.warn("Method not implemented!");
+		try {
+			webPageDao.delete(page);
+		} catch (SQLException e) {
+			logger.warn("Failed to delete entry {}", e);
+		}
 	}
 	
 	private void setupDatabase(ConnectionSource cs) throws SQLException {

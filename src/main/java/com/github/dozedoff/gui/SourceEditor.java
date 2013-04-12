@@ -20,13 +20,16 @@ package com.github.dozedoff.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.List;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
@@ -41,15 +44,18 @@ public class SourceEditor extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerFactory.getLogger(SourceEditor.class);
 	
-	JPanel sourcePanel;
+	JScrollPane sourceScroll;
+	JList<Webpage> sourceList;
 	JPopupMenu sourcePopup;
 	JMenuItem sourceCreateMenuItem, sourceDeleteMenuItem;
+	DefaultListModel<Webpage> sourceListModel;
 	
 	public SourceEditor() {
 		logger.info("Creating window {}", this.getClass().getCanonicalName());
 		setupFrame();
-		setupSourcePanel();
+		setupSourceList();
 		setupPopupmenu();
+		populateSourceList();
 		
 		this.revalidate();
 		this.setVisible(true);
@@ -63,11 +69,19 @@ public class SourceEditor extends JFrame {
 		this.setTitle("Sources");
 	}
 	
-	private void setupSourcePanel() {
-		sourcePanel  = new JPanel(new MigLayout());
-		this.add(sourcePanel, "wrap");
+	private void setupSourceList() {
+		sourceListModel = new DefaultListModel<>();
+		sourceList  = new JList<>(sourceListModel);
+		sourceScroll = new JScrollPane(sourceList);
+		this.add(sourceScroll, "w 100!, h 50!");
+	}
+	
+	private void populateSourceList() {
+		List<Webpage> pages = Persistence.getInstance().loadWebpage();
 		
-		sourcePanel.revalidate();
+		for(Webpage page : pages) {
+			sourceListModel.addElement(page);
+		}
 	}
 	
 	private void createAddSourceDialog() {
@@ -86,6 +100,8 @@ public class SourceEditor extends JFrame {
 			Webpage page = new Webpage(sourceName.getText(), sourceUrl.getText(), "", 1, cssSelector.getText());
 			try {
 				Persistence.getInstance().saveWebpage(page);
+				sourceListModel.addElement(page);
+				sourceList.repaint();
 			} catch (SQLException e) {
 				logger.error("Failed to save entry {}", e);
 			}
@@ -108,14 +124,18 @@ public class SourceEditor extends JFrame {
 		sourceDeleteMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				logger.warn("Method not implemented!");
+				int index = sourceList.getSelectedIndex();
+				if (index >= 0 && index <= sourceListModel.getSize()) {
+					Webpage selected = sourceListModel.get(index);
+					Persistence.getInstance().deleteWebpage(selected);
+					sourceListModel.remove(index);
+				}
 			}
 		});
 		
 		sourcePopup.add(sourceCreateMenuItem);
 		sourcePopup.add(sourceDeleteMenuItem);
 		
-		sourcePanel.setComponentPopupMenu(sourcePopup);
+		sourceList.setComponentPopupMenu(sourcePopup);
 	}
 }
