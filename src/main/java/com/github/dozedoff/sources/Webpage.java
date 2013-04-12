@@ -35,8 +35,7 @@ public class Webpage {
 	private String baseUrl;
 	private String pagePattern;
 	private int numOfPages;
-	private List<String> whitelist;
-	private List<String> blacklist;
+	
 
 	private final int HTTP_TIMEOUT = 5000;
 	
@@ -46,12 +45,16 @@ public class Webpage {
 	@Deprecated
 	public Webpage() {}
 
-	public Webpage(String baseUrl, String pagePattern, int numOfPages) {
+	
+	public Webpage(String baseUrl, String pagePattern, int numOfPages,
+			String elementRegex) {
 		this.baseUrl = baseUrl;
 		this.pagePattern = pagePattern;
 		this.numOfPages = numOfPages;
+		this.elementRegex = elementRegex;
 	}
-	
+
+
 	public List<ResultLink> getLinks() throws MalformedURLException {
 		LinkedList<ResultLink> links = new LinkedList<ResultLink>();
 		LinkedList<URL> pageUrls = makePageUrls();
@@ -77,7 +80,7 @@ public class Webpage {
 	}
 
 	private LinkedList<URL> makePageUrls() throws MalformedURLException {
-		// TODO generate URLs from baseUrl and page patter with numOfPages
+		// TODO generate URLs from baseUrl and page pattern with numOfPages
 		LinkedList<URL> urls = new LinkedList<URL>();
 		urls.add(new URL(baseUrl));
 		return urls;
