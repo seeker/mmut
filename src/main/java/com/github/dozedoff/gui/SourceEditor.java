@@ -19,6 +19,7 @@ package com.github.dozedoff.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -83,7 +84,11 @@ public class SourceEditor extends JFrame {
 			//TODO add input validation
 			//TODO update dialog for other parameters
 			Webpage page = new Webpage(sourceName.getText(), sourceUrl.getText(), "", 1, cssSelector.getText());
-			Persistence.getInstance().saveWebpage(page);
+			try {
+				Persistence.getInstance().saveWebpage(page);
+			} catch (SQLException e) {
+				logger.error("Failed to save entry {}", e);
+			}
 		} else {
 			logger.info("User aborted source entry");
 		}

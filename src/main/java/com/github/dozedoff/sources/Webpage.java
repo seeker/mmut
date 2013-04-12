@@ -29,16 +29,25 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.github.dozedoff.media.ResultLink;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
+@DatabaseTable
 public class Webpage {
+	@DatabaseField(id=true)
 	private int id;
+	@DatabaseField(canBeNull=false)
 	private String name;
+	@DatabaseField(canBeNull=false)
 	private String elementRegex;
+	@DatabaseField(canBeNull=false)
 	private String baseUrl;
+	@DatabaseField(canBeNull=false)
 	private String pagePattern;
+	@DatabaseField(canBeNull=false)
 	private int numOfPages;
 	
-
+	
 	private final int HTTP_TIMEOUT = 5000;
 	
 	/**
