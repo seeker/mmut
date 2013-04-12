@@ -47,7 +47,7 @@ public class SourceEditor extends JFrame {
 	JScrollPane sourceScroll;
 	JList<Webpage> sourceList;
 	JPopupMenu sourcePopup;
-	JMenuItem sourceCreateMenuItem, sourceDeleteMenuItem;
+	JMenuItem sourceCreateMenuItem, sourceDeleteMenuItem, sourceEditMenuItem;
 	DefaultListModel<Webpage> sourceListModel;
 	
 	public SourceEditor() {
@@ -84,10 +84,15 @@ public class SourceEditor extends JFrame {
 		}
 	}
 	
-	private void createAddSourceDialog() {
-		JTextField sourceName = new JTextField();
-		JTextField sourceUrl = new JTextField();
-		JTextField cssSelector = new JTextField();
+	private void createSourceDialog(Webpage page) {
+		if(page == null) {
+			page = new Webpage("", "", "", 0, "");
+		}
+		
+		JTextField sourceName = new JTextField(page.getName());
+		JTextField sourceUrl = new JTextField(page.getBaseUrl());
+		JTextField cssSelector = new JTextField(page.getElementRegex());
+		
 		Object[] message = {"Source name: ", sourceName, "Source URL: ", sourceUrl, "CSS selector: ", cssSelector};
 		JOptionPane pane = new JOptionPane(message,  JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 		JDialog getTopicDialog =  pane.createDialog(null, "Add source");
@@ -97,9 +102,13 @@ public class SourceEditor extends JFrame {
 			logger.info("Adding new source {} with URL {}", sourceName.getText(), sourceUrl.getText());
 			//TODO add input validation
 			//TODO update dialog for other parameters
-			Webpage page = new Webpage(sourceName.getText(), sourceUrl.getText(), "", 1, cssSelector.getText());
+			page.setName(sourceName.getText());
+			page.setBaseUrl(sourceUrl.getText());
+			page.setElementRegex(cssSelector.getText());
+			
 			try {
 				Persistence.getInstance().saveWebpage(page);
+				sourceListModel.removeElement(page);
 				sourceListModel.addElement(page);
 				sourceList.repaint();
 			} catch (SQLException e) {
@@ -116,16 +125,29 @@ public class SourceEditor extends JFrame {
 		sourceCreateMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				createAddSourceDialog();
+				createSourceDialog(null);
 			}
 		});
+		
+		sourceEditMenuItem = new JMenuItem("Edit");
+		sourceEditMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int index = sourceList.getSelectedIndex();
+				if (isValidIndex(index)) {
+					Webpage selected = sourceListModel.get(index);
+					createSourceDialog(selected);
+				}
+			}
+		});
+		
 		
 		sourceDeleteMenuItem = new JMenuItem("Delete");
 		sourceDeleteMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int index = sourceList.getSelectedIndex();
-				if (index >= 0 && index <= sourceListModel.getSize()) {
+				if (isValidIndex(index)) {
 					Webpage selected = sourceListModel.get(index);
 					Persistence.getInstance().deleteWebpage(selected);
 					sourceListModel.remove(index);
@@ -134,8 +156,13 @@ public class SourceEditor extends JFrame {
 		});
 		
 		sourcePopup.add(sourceCreateMenuItem);
+		sourcePopup.add(sourceEditMenuItem);
 		sourcePopup.add(sourceDeleteMenuItem);
 		
 		sourceList.setComponentPopupMenu(sourcePopup);
+	}
+	
+	private boolean isValidIndex(int index) {
+		return (index >= 0) && (index <= sourceListModel.getSize());
 	}
 }

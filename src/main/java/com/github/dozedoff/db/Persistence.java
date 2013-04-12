@@ -57,7 +57,7 @@ public class Persistence {
 	}
 	
 	public void saveWebpage(Webpage page) throws SQLException {
-		webPageDao.create(page);
+		webPageDao.createOrUpdate(page);
 	}
 	
 	public List<Webpage> loadWebpage() {
