@@ -15,8 +15,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.github.dozedoff.results;
+package com.github.dozedoff.media;
 
-public enum SourceType {
-	WEBPAGE, IRC
+public enum TargetType {
+	TORRENT, // a link to a torrent file
+	MAGNET_LINK, // a magnet link for torrents
+	FILE,	// a direct link to the file
+	DOWNLOAD_LINK	// a link to a download site
 }

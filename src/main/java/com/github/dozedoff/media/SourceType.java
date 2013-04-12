@@ -15,27 +15,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-package com.github.dozedoff.results;
+package com.github.dozedoff.media;
 
-public class ResultLink {
-	String description, url;
-	SourceType sourceType;
-	TargetType targetType;
-
-	public ResultLink(String description, String url, SourceType sourceType,
-			TargetType targetType) {
-		super();
-		this.description = description;
-		this.url = url;
-		this.sourceType = sourceType;
-		this.targetType = targetType;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public String getUrl() {
-		return url;
-	}
+public enum SourceType {
+	WEBPAGE, IRC
 }

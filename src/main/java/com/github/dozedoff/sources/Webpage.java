@@ -28,7 +28,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.github.dozedoff.results.ResultLink;
+import com.github.dozedoff.media.ResultLink;
 
 public class Webpage {
 	private String elementRegex;
