@@ -20,6 +20,7 @@ package com.github.dozedoff.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -27,6 +28,8 @@ import javax.swing.JMenuItem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.dozedoff.media.MediaFinder;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -40,13 +43,15 @@ public class MmutGui extends JFrame {
 	JMenuItem sourcesMenuItem;
 	JMenu settingsMenu;
 	
+	JButton processAll;
+	
 	int windowWidth = 500, windowHight = 500;
 	
 	public MmutGui() {
 		logger.info("Creating window {}", this.getClass().getCanonicalName());
 		setupFrame();
 		setupMenuBar();
-		
+		setupButton();
 		this.setVisible(true);
 	}
 	
@@ -75,5 +80,17 @@ public class MmutGui extends JFrame {
 		this.setJMenuBar(menuBar);
 		menuBar.validate();
 		menuBar.setVisible(true);
+	}
+	
+	private void setupButton() {
+		processAll = new JButton("Process All");
+		processAll.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				MediaFinder.findAll();
+			}
+		});
+		
+		this.add(processAll);
 	}
 }

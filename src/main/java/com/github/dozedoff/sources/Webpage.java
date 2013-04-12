@@ -17,6 +17,10 @@
 */
 package com.github.dozedoff.sources;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import com.github.dozedoff.media.MediaDefinition;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -34,6 +38,8 @@ public class Webpage {
 	private String pagePattern;
 	@DatabaseField(canBeNull=false)
 	private int numOfPages;
+
+	private LinkedList<MediaDefinition> mediaDefinitions;
 	
 	/**
 	 * Intended for DAO
@@ -48,6 +54,7 @@ public class Webpage {
 		this.pagePattern = pagePattern;
 		this.numOfPages = numOfPages;
 		this.elementRegex = elementRegex;
+		mediaDefinitions = new LinkedList<>();
 	}
 	
 	@Override
@@ -93,5 +100,13 @@ public class Webpage {
 
 	public void setNumOfPages(int numOfPages) {
 		this.numOfPages = numOfPages;
+	}
+	
+	public void addDefinition(MediaDefinition md) {
+		mediaDefinitions.add(md);
+	}
+	
+	public List<MediaDefinition> getDefinitions() {
+		return new LinkedList<>(mediaDefinitions);
 	}
 }

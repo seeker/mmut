@@ -8,9 +8,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 public class WebpageParser {
-	private final int HTTP_TIMEOUT = 5000;
+	private static final int HTTP_TIMEOUT = 5000;
 	
-	public Elements parsePage(URL url, String entryRegex) throws IOException {
+	public static Elements parsePage(URL url, String entryRegex) throws IOException {
 		Document page = Jsoup.parse(url, HTTP_TIMEOUT);
 		Elements entries = page.select(entryRegex);
 		
