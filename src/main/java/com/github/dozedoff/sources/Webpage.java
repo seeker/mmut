@@ -31,6 +31,7 @@ import org.jsoup.select.Elements;
 import com.github.dozedoff.media.ResultLink;
 
 public class Webpage {
+	private int id;
 	private String elementRegex;
 	private String baseUrl;
 	private String pagePattern;

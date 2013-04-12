@@ -17,22 +17,63 @@
 */
 package com.github.dozedoff.gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.miginfocom.swing.MigLayout;
 
 public class MmutGui extends JFrame {
 	private static final long serialVersionUID = 1L;
-	JPanel mainPanel = new JPanel(new MigLayout());
+	private static Logger logger = LoggerFactory.getLogger(MmutGui.class);
+	
+	SourceEditor sourceEditor;
+	
+	JMenuBar menuBar;
+	JMenuItem sourcesMenuItem;
+	JMenu settingsMenu;
+	
 	int windowWidth = 500, windowHight = 500;
 	
 	public MmutGui() {
-		this.setTitle("Multi-Media update tracker");
-		this.setSize(windowWidth, windowHight);
-		
-		this.add(mainPanel);
+		logger.info("Creating window {}", this.getClass().getCanonicalName());
+		setupFrame();
+		setupMenuBar();
 		
 		this.setVisible(true);
+	}
+	
+	private void setupFrame() {
+		this.setLayout(new MigLayout());
+		this.setTitle("Multi-Media update tracker");
+		this.setSize(windowWidth, windowHight);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
+	private void setupMenuBar() {
+		menuBar  = new JMenuBar();
+		settingsMenu = new JMenu("Settings");
+		sourcesMenuItem = new JMenuItem("Sources");
+		
+		sourcesMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				sourceEditor = new SourceEditor();
+			}
+		});
+		
+		menuBar.add(settingsMenu);
+		settingsMenu.add(sourcesMenuItem);
+		
+		this.setJMenuBar(menuBar);
+		menuBar.validate();
+		menuBar.setVisible(true);
 	}
 }
