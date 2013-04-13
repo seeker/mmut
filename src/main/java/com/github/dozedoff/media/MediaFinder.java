@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,16 +45,31 @@ public class MediaFinder {
 				url = new URL(page.getBaseUrl());
 				Elements elements = WebpageParser.parsePage(url, page.getElementRegex());
 				logger.info("Found {} entries for {}",elements.size(), page.getName());
+
+				List<Element> entries =  filterDefinitions(page.getDefinitions(), elements);
+				logger.info("{} entries left for {} after filtering", entries.size(), page.getName());
 				
+				
+								
 			} catch (MalformedURLException e) {
 				logger.warn("Unable to create url from {} for source {}", page.getBaseUrl(), page.getName());
 			} catch (IOException e) {
 				logger.warn("Unable to parse page {} for source {}", page.getBaseUrl(), page.getName());
 			}
-			
-			
 		}
 		
 		return results;
+	}
+
+	private static List<Element> filterDefinitions(List<MediaDefinition> definitions, Elements elements) {
+		LinkedList<Element> acceptedEntries = new LinkedList<>();
+		DefinitionFilter defFilter = new DefinitionFilter();
+		
+		for(MediaDefinition def : definitions) {
+			List<Element> result = defFilter.filterDefinition(def, elements);
+			acceptedEntries.addAll(result);
+		}
+		
+		return acceptedEntries;
 	}
 }
