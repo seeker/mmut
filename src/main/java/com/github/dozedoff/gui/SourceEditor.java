@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -157,8 +158,11 @@ public class SourceEditor extends JFrame {
 		JTextField name = new JTextField(definition.getName());
 		JTextField whitelist = new JTextField(definition.getWhitelist());
 		JTextField blacklist = new JTextField(definition.getBlacklist());
+		JComboBox<TargetType> type = new JComboBox<>(TargetType.values());
+		type.setEditable(false);
+		type.setSelectedItem(definition.getType());
 		
-		Object[] message = {"Name: ", name, "Whitelist: ", whitelist, "Blacklist: ", blacklist};
+		Object[] message = {"Name: ", name, "Whitelist: ", whitelist, "Blacklist: ", blacklist, "Target Type: ", type};
 		JOptionPane pane = new JOptionPane(message,  JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 		JDialog getTopicDialog =  pane.createDialog(null, "Add source");
 		getTopicDialog.setVisible(true);
@@ -170,6 +174,7 @@ public class SourceEditor extends JFrame {
 			definition.setBlacklist(blacklist.getText());
 			definition.setWhitelist(whitelist.getText());
 			definition.setName(name.getText());
+			definition.setType((TargetType)type.getSelectedItem());
 
 			Persistence.getInstance().saveDefinition(definition);
 			definitionListModel.removeElement(definition);
