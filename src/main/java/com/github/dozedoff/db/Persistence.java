@@ -80,10 +80,26 @@ public class Persistence {
 		try {
 			webPageDao.delete(page);
 		} catch (SQLException e) {
-			logger.warn("Failed to delete entry {}", e);
+			logger.warn("Failed to delete entry {}", page.getName(), e);
 		}
 	}
 	
+	public void saveDefinition(MediaDefinition definition) {
+		try {
+			definitionDao.createOrUpdate(definition);
+		} catch (SQLException e) {
+			logger.warn("Failed to save definition for {}", definition.getParent().getName(), e);
+		}
+	}
+	
+	public void deleteDefinition(MediaDefinition definition) {
+		try {
+			definitionDao.delete(definition);
+		} catch (SQLException e) {
+			logger.warn("Failed to delete defintion for {}", definition.getParent().getName(), e);
+		}
+	}
+		
 	private void setupDatabase(ConnectionSource cs) throws SQLException {
 		logger.info("Setting up database tables...");
 		TableUtils.createTableIfNotExists(cs, Webpage.class);

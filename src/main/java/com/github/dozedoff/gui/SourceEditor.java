@@ -33,6 +33,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -40,6 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.dozedoff.db.Persistence;
+import com.github.dozedoff.media.MediaDefinition;
+import com.github.dozedoff.media.TargetType;
 import com.github.dozedoff.sources.Webpage;
 
 public class SourceEditor extends JFrame {
@@ -47,15 +51,18 @@ public class SourceEditor extends JFrame {
 	private static Logger logger = LoggerFactory.getLogger(SourceEditor.class);
 	private enum popupMenuType {Create, Edit, Delete}
 	
-	JScrollPane sourceScroll;
 	JList<Webpage> sourceList;
+	JList<MediaDefinition> definitionList;
 	DefaultListModel<Webpage> sourceListModel;
+	DefaultListModel<MediaDefinition> definitionListModel;
 	
 	public SourceEditor() {
 		logger.info("Creating window {}", this.getClass().getCanonicalName());
 		setupFrame();
 		setupSourceList();
+		setupDefinitionList();
 		setupSourcePopupMenu();
+		setupDefinitionPopupMenu();
 		populateSourceList();
 		
 		this.revalidate();
@@ -73,8 +80,30 @@ public class SourceEditor extends JFrame {
 	private void setupSourceList() {
 		sourceListModel = new DefaultListModel<>();
 		sourceList  = new JList<>(sourceListModel);
-		sourceScroll = new JScrollPane(sourceList);
-		this.add(sourceScroll, "span 2, growy");
+		this.add(new JScrollPane(sourceList), "span 2, growy");
+		
+		sourceList.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent arg0) {
+				int index = sourceList.getSelectedIndex();
+				
+				if(isValidIndex(index, sourceListModel)) {
+					Webpage page = sourceListModel.get(index);
+					definitionListModel.clear();
+					List<MediaDefinition> definitions = page.getDefinitions();
+					
+					for(MediaDefinition def : definitions) {
+						definitionListModel.addElement(def);
+					}
+				}
+			}
+		});
+	}
+	
+	private void setupDefinitionList() {
+		definitionListModel = new DefaultListModel<>();
+		definitionList = new JList<>(definitionListModel);
+		this.add(new JScrollPane(definitionList), "span 3, grow");
 	}
 	
 	private void populateSourceList() {
@@ -120,6 +149,37 @@ public class SourceEditor extends JFrame {
 		}
 	}
 	
+	private void createDefinitionDialog(Webpage parent, MediaDefinition definition) {
+		if(definition == null) {
+			definition = new MediaDefinition("", TargetType.MAGNET_LINK, parent);
+		}
+		
+		JTextField name = new JTextField(definition.getName());
+		JTextField whitelist = new JTextField(definition.getWhitelist());
+		JTextField blacklist = new JTextField(definition.getBlacklist());
+		
+		Object[] message = {"Name: ", name, "Whitelist: ", whitelist, "Blacklist: ", blacklist};
+		JOptionPane pane = new JOptionPane(message,  JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+		JDialog getTopicDialog =  pane.createDialog(null, "Add source");
+		getTopicDialog.setVisible(true);
+		
+		if(pane.getValue() != null && (int)pane.getValue() == JOptionPane.OK_OPTION) {
+			logger.info("Adding new definition for {}", parent.getName());
+			//TODO add input validation
+			//TODO update dialog for other parameters
+			definition.setBlacklist(blacklist.getText());
+			definition.setWhitelist(whitelist.getText());
+			definition.setName(name.getText());
+
+			Persistence.getInstance().saveDefinition(definition);
+			definitionListModel.removeElement(definition);
+			definitionListModel.addElement(definition);
+			sourceList.repaint();
+		} else {
+			logger.info("User aborted source entry");
+		}
+	}
+	
 	private void setupSourcePopupMenu() {
 		HashMap<popupMenuType, ActionListener> actions = new HashMap<>();
 		actions.put(popupMenuType.Create, new ActionListener() {
@@ -133,7 +193,7 @@ public class SourceEditor extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				int index = sourceList.getSelectedIndex();
-				if (isValidIndex(index)) {
+				if (isValidIndex(index, sourceListModel)) {
 					Webpage selected = sourceListModel.get(index);
 					createSourceDialog(selected);
 				}
@@ -144,7 +204,7 @@ public class SourceEditor extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int index = sourceList.getSelectedIndex();
-				if (isValidIndex(index)) {
+				if (isValidIndex(index, sourceListModel)) {
 					Webpage selected = sourceListModel.get(index);
 					Persistence.getInstance().deleteWebpage(selected);
 					sourceListModel.remove(index);
@@ -153,6 +213,49 @@ public class SourceEditor extends JFrame {
 		});
 		
 		setupPopupmenu(sourceList, actions);
+	}
+	
+	private void setupDefinitionPopupMenu() {
+		HashMap<popupMenuType, ActionListener> actions = new HashMap<>();
+		actions.put(popupMenuType.Create, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int index = sourceList.getSelectedIndex();
+				if (isValidIndex(index, sourceListModel)) {
+					Webpage selected = sourceListModel.get(index);
+					createDefinitionDialog(selected, null);
+				}
+			}
+		});
+		
+		actions.put(popupMenuType.Edit, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int sourceIndex = sourceList.getSelectedIndex();
+				if (isValidIndex(sourceIndex, sourceListModel)) {
+					Webpage page = sourceListModel.get(sourceIndex);
+					int definitionIndex = definitionList.getSelectedIndex();
+					if(isValidIndex(definitionIndex, definitionListModel)){
+						MediaDefinition definition = definitionListModel.get(definitionIndex);
+						createDefinitionDialog(page, definition);
+					}
+				}
+			}
+		});
+		
+		actions.put(popupMenuType.Delete, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int index = definitionList.getSelectedIndex();
+				if (isValidIndex(index,definitionListModel)) {
+					MediaDefinition selected = definitionListModel.get(index);
+					Persistence.getInstance().deleteDefinition(selected);
+					definitionListModel.remove(index);
+				}
+			}
+		});
+		
+		setupPopupmenu(definitionList, actions);
 	}
 	
 	private void setupPopupmenu(JComponent comp, HashMap<popupMenuType, ActionListener> actions) {
@@ -171,7 +274,7 @@ public class SourceEditor extends JFrame {
 		comp.setComponentPopupMenu(popupMenu);
 	}
 	
-	private boolean isValidIndex(int index) {
-		return (index >= 0) && (index <= sourceListModel.getSize());
+	private boolean isValidIndex(int index, DefaultListModel<?> model) {
+		return (index >= 0) && (index <= model.getSize());
 	}
 }

@@ -17,10 +17,7 @@
 */
 package com.github.dozedoff.media;
 
-import java.util.LinkedList;
-
 import com.github.dozedoff.sources.Webpage;
-import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -30,10 +27,12 @@ public class MediaDefinition {
 	private int id;
 	@DatabaseField(canBeNull=false, foreign=true)
 	Webpage parent;
-	@DatabaseField(dataType=DataType.SERIALIZABLE)
-	private LinkedList<String> whitelist;
-	@DatabaseField(dataType=DataType.SERIALIZABLE)
-	private LinkedList<String> blacklist;
+	@DatabaseField(canBeNull=false)
+	String name;
+	@DatabaseField(canBeNull=false)
+	private String whitelist;
+	@DatabaseField(canBeNull=false)
+	private String blacklist;
 	@DatabaseField(canBeNull=false)
 	private TargetType type;
 	
@@ -43,58 +42,52 @@ public class MediaDefinition {
 	@Deprecated
 	public MediaDefinition() {}
 
-	public MediaDefinition(TargetType type, Webpage parent) {
+	public MediaDefinition(String name, TargetType type, Webpage parent) {
+		this.name = name;
 		this.type = type;
 		this.parent = parent;
-		whitelist = new LinkedList<>();
-		blacklist = new LinkedList<>();
-	}
-	
-	private boolean isValidEntry(String entry) {
-		if(entry == null || entry.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	public boolean addToWhitelist(String entry) {
-		if(! isValidEntry(entry)) {
-			return false;
-		}
-		
-		whitelist.add(entry);
-		
-		return true;
-	}
-	
-	public boolean removeFromWhitelist(String entry) {
-		if(! isValidEntry(entry)) {
-			return false;
-		}
-		
-		return whitelist.remove(entry);
-	}
-	
-	public boolean addToBlacklist(String entry) {
-		if(! isValidEntry(entry)) {
-			return false;
-		}
-		
-		blacklist.add(entry);
-		
-		return true;
-	}
-	
-	public boolean removeFromBlacklist(String entry) {
-		if(! isValidEntry(entry)) {
-			return false;
-		}
-		
-		return blacklist.remove(entry);
+		whitelist = "";
+		blacklist = "";
 	}
 
 	public TargetType getType() {
 		return type;
+	}
+
+	public void setType(TargetType type) {
+		this.type = type;
+	}
+
+	public String getWhitelist() {
+		return whitelist;
+	}
+
+	public void setWhitelist(String whitelist) {
+		this.whitelist = whitelist;
+	}
+
+	public String getBlacklist() {
+		return blacklist;
+	}
+
+	public void setBlacklist(String blacklist) {
+		this.blacklist = blacklist;
+	}
+	
+	public Webpage getParent() {
+		return parent;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 }

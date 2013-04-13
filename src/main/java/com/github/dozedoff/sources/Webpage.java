@@ -40,7 +40,7 @@ public class Webpage {
 	private String pagePattern;
 	@DatabaseField(canBeNull=false)
 	private int numOfPages;
-	@ForeignCollectionField
+	@ForeignCollectionField(eager=true)
 	private Collection<MediaDefinition> mediaDefinitions;
 	
 	/**
