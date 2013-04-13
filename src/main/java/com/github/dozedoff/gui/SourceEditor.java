@@ -20,9 +20,11 @@ package com.github.dozedoff.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -43,18 +45,17 @@ import com.github.dozedoff.sources.Webpage;
 public class SourceEditor extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerFactory.getLogger(SourceEditor.class);
+	private enum popupMenuType {Create, Edit, Delete}
 	
 	JScrollPane sourceScroll;
 	JList<Webpage> sourceList;
-	JPopupMenu sourcePopup;
-	JMenuItem sourceCreateMenuItem, sourceDeleteMenuItem, sourceEditMenuItem;
 	DefaultListModel<Webpage> sourceListModel;
 	
 	public SourceEditor() {
 		logger.info("Creating window {}", this.getClass().getCanonicalName());
 		setupFrame();
 		setupSourceList();
-		setupPopupmenu();
+		setupSourcePopupMenu();
 		populateSourceList();
 		
 		this.revalidate();
@@ -64,7 +65,7 @@ public class SourceEditor extends JFrame {
 	
 	private void setupFrame() {
 		this.setSize(600, 400);
-		this.setLayout(new MigLayout());
+		this.setLayout(new MigLayout("wrap 5"));
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.setTitle("Sources");
 	}
@@ -73,7 +74,7 @@ public class SourceEditor extends JFrame {
 		sourceListModel = new DefaultListModel<>();
 		sourceList  = new JList<>(sourceListModel);
 		sourceScroll = new JScrollPane(sourceList);
-		this.add(sourceScroll, "w 100!, h 50!");
+		this.add(sourceScroll, "span 2, growy");
 	}
 	
 	private void populateSourceList() {
@@ -119,18 +120,16 @@ public class SourceEditor extends JFrame {
 		}
 	}
 	
-	private void setupPopupmenu() {
-		sourcePopup = new JPopupMenu();
-		sourceCreateMenuItem = new JMenuItem("Create");
-		sourceCreateMenuItem.addActionListener(new ActionListener() {
+	private void setupSourcePopupMenu() {
+		HashMap<popupMenuType, ActionListener> actions = new HashMap<>();
+		actions.put(popupMenuType.Create, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				createSourceDialog(null);
 			}
 		});
 		
-		sourceEditMenuItem = new JMenuItem("Edit");
-		sourceEditMenuItem.addActionListener(new ActionListener() {
+		actions.put(popupMenuType.Edit, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				int index = sourceList.getSelectedIndex();
@@ -141,9 +140,7 @@ public class SourceEditor extends JFrame {
 			}
 		});
 		
-		
-		sourceDeleteMenuItem = new JMenuItem("Delete");
-		sourceDeleteMenuItem.addActionListener(new ActionListener() {
+		actions.put(popupMenuType.Delete, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int index = sourceList.getSelectedIndex();
@@ -155,11 +152,23 @@ public class SourceEditor extends JFrame {
 			}
 		});
 		
-		sourcePopup.add(sourceCreateMenuItem);
-		sourcePopup.add(sourceEditMenuItem);
-		sourcePopup.add(sourceDeleteMenuItem);
+		setupPopupmenu(sourceList, actions);
+	}
+	
+	private void setupPopupmenu(JComponent comp, HashMap<popupMenuType, ActionListener> actions) {
+		JPopupMenu popupMenu = new JPopupMenu();
 		
-		sourceList.setComponentPopupMenu(sourcePopup);
+		for(popupMenuType type : popupMenuType.values()) {
+			ActionListener listener = actions.get(type);
+			
+			if(listener != null) {
+				JMenuItem jmi = new JMenuItem(type.toString());
+				jmi.addActionListener(listener);
+				popupMenu.add(jmi);
+			}
+		}
+
+		comp.setComponentPopupMenu(popupMenu);
 	}
 	
 	private boolean isValidIndex(int index) {
