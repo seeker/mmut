@@ -17,11 +17,13 @@
 */
 package com.github.dozedoff.sources;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.github.dozedoff.media.MediaDefinition;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
@@ -38,8 +40,8 @@ public class Webpage {
 	private String pagePattern;
 	@DatabaseField(canBeNull=false)
 	private int numOfPages;
-
-	private LinkedList<MediaDefinition> mediaDefinitions;
+	@ForeignCollectionField
+	private Collection<MediaDefinition> mediaDefinitions;
 	
 	/**
 	 * Intended for DAO

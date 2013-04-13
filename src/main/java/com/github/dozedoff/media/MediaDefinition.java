@@ -17,11 +17,24 @@
 */
 package com.github.dozedoff.media;
 
-import java.util.List;
+import java.util.LinkedList;
 
+import com.github.dozedoff.sources.Webpage;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+@DatabaseTable
 public class MediaDefinition {
-	private List<String> whitelist;
-	private List<String> blacklist;
+	@DatabaseField(generatedId=true)
+	private int id;
+	@DatabaseField(canBeNull=false, foreign=true)
+	Webpage parent;
+	@DatabaseField(dataType=DataType.SERIALIZABLE)
+	private LinkedList<String> whitelist;
+	@DatabaseField(dataType=DataType.SERIALIZABLE)
+	private LinkedList<String> blacklist;
+	@DatabaseField(canBeNull=false)
 	private TargetType type;
 	
 	/**
@@ -30,8 +43,11 @@ public class MediaDefinition {
 	@Deprecated
 	public MediaDefinition() {}
 
-	public MediaDefinition(TargetType type) {
+	public MediaDefinition(TargetType type, Webpage parent) {
 		this.type = type;
+		this.parent = parent;
+		whitelist = new LinkedList<>();
+		blacklist = new LinkedList<>();
 	}
 	
 	private boolean isValidEntry(String entry) {

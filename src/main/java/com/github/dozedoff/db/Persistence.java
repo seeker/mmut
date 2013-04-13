@@ -24,6 +24,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.dozedoff.media.MediaDefinition;
 import com.github.dozedoff.sources.Webpage;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
@@ -38,12 +39,15 @@ public class Persistence {
 	private final String dbUrl = "jdbc:sqlite:mmut.db";
 	
 	private Dao<Webpage, Integer> webPageDao;
+	private Dao<MediaDefinition, Integer> definitionDao;
 	
 	private Persistence() {
 		try {
-			setupDAO();
+			ConnectionSource cs = new JdbcConnectionSource(dbUrl);
+			setupDatabase(cs);
+			setupDAO(cs);
 		} catch (SQLException e) {
-			logger.error("Failed to setup database {}", e);
+			logger.error("Failed to setup database {}", dbUrl, e);
 			System.exit(1);
 		}
 	}
@@ -81,12 +85,14 @@ public class Persistence {
 	}
 	
 	private void setupDatabase(ConnectionSource cs) throws SQLException {
+		logger.info("Setting up database tables...");
 		TableUtils.createTableIfNotExists(cs, Webpage.class);
+		TableUtils.createTableIfNotExists(cs, MediaDefinition.class);
 	}
 	
-	private void setupDAO() throws SQLException {
-		ConnectionSource cs = new JdbcConnectionSource(dbUrl);
-		setupDatabase(cs);
+	private void setupDAO(ConnectionSource cs) throws SQLException {
+		logger.info("Setting up DAO...");
+		definitionDao = DaoManager.createDao(cs, MediaDefinition.class);
 		webPageDao = DaoManager.createDao(cs, Webpage.class);
 	}
 }
