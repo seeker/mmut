@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.hasItem;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Before;
@@ -46,9 +47,9 @@ public class PagePatternParserTest {
 	@Test
 	public void testSimplePattern() {
 		result = PagePatternParser.parsePagePattern("page%%", 0, 2);
-		String[] items = {"page0", "page1", "page2"};
-		assertThat(result, hasItems(items));
+		String[] items = {"page0", "page1", "page2"}; 
 		assertThat(result.size(), is(3));
+		assertThat(result, hasItems(items));
 	}
 
 	@Test
@@ -72,5 +73,10 @@ public class PagePatternParserTest {
 	@Test(expected=IllegalArgumentException.class)
 	public void testInvalidPageRange2() {
 		result = PagePatternParser.parsePagePattern("foo", 0, -1);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testSwappedPageRange() {
+		result = PagePatternParser.parsePagePattern("foo", 2, 1);
 	}
 }
