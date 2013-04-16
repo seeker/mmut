@@ -22,6 +22,7 @@ import java.util.List;
 
 public class PagePatternParser {
 	private static final String PATTERN_SYMBOL = "%%";
+	
 	public static List<String> parsePagePattern(String pattern, int pageStart, int pageEnd) throws IllegalArgumentException {
 		List<String> relativePages = new LinkedList<>();
 
@@ -31,7 +32,12 @@ public class PagePatternParser {
 		
 		pageRangeCheck(pageStart, pageEnd);
 		
-		for(int i = pageStart; i < pageEnd; i++) {
+		if(!pattern.contains(PATTERN_SYMBOL)) {
+			relativePages.add(pattern);
+			return relativePages;
+		}
+		
+		for(int i = pageStart; i <= pageEnd; i++) {
 			String relativePage = replacePattern(pattern, i);
 			relativePages.add(relativePage);
 		}
