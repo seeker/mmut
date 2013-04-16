@@ -18,11 +18,10 @@
 package com.github.dozedoff.media;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.junit.matchers.JUnitMatchers.hasItems;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Before;
@@ -30,6 +29,7 @@ import org.junit.Test;
 
 public class PagePatternParserTest {
 	List<String> result;
+	private final String[] items = {"page0", "page1", "page2"}; 
 	
 	@Before
 	public void setUp() throws Exception {
@@ -47,9 +47,10 @@ public class PagePatternParserTest {
 	@Test
 	public void testSimplePattern() {
 		result = PagePatternParser.parsePagePattern("page%%", 0, 2);
-		String[] items = {"page0", "page1", "page2"}; 
-		assertThat(result.size(), is(3));
+		
+		
 		assertThat(result, hasItems(items));
+		assertThat(result.size(), is(3));
 	}
 
 	@Test
