@@ -30,6 +30,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.table.TableUtils;
 
 public class Persistence {
@@ -37,13 +38,13 @@ public class Persistence {
 	private static Logger logger = LoggerFactory.getLogger(Persistence.class);
 	
 	private final String dbUrl = "jdbc:sqlite:mmut.db";
-	
 	private Dao<Webpage, Integer> webPageDao;
 	private Dao<MediaDefinition, Integer> definitionDao;
+	ConnectionSource cs;
 	
 	private Persistence() {
 		try {
-			ConnectionSource cs = new JdbcConnectionSource(dbUrl);
+			cs = new JdbcConnectionSource(dbUrl);
 			setupDatabase(cs);
 			setupDAO(cs);
 		} catch (SQLException e) {
@@ -97,6 +98,20 @@ public class Persistence {
 			definitionDao.delete(definition);
 		} catch (SQLException e) {
 			logger.warn("Failed to delete defintion for {}", definition.getParent().getName(), e);
+		}
+	}
+	
+	public void vacuumDb(){
+		if(cs == null) {
+			return;
+		}
+		
+		try {
+			DatabaseConnection dbc = cs.getReadWriteConnection();
+			dbc.executeStatement("VACUUM" , DatabaseConnection.DEFAULT_RESULT_FLAGS);
+			cs.releaseConnection(dbc);
+		} catch (SQLException e) {
+			logger.warn("Vacuum operation failed.", e);
 		}
 	}
 		

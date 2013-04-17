@@ -29,6 +29,7 @@ import javax.swing.JMenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.dozedoff.db.Persistence;
 import com.github.dozedoff.media.MediaFinder;
 
 import net.miginfocom.swing.MigLayout;
@@ -40,8 +41,8 @@ public class MmutGui extends JFrame {
 	SourceEditor sourceEditor;
 	
 	JMenuBar menuBar;
-	JMenuItem sourcesMenuItem;
-	JMenu settingsMenu;
+	JMenuItem sourcesMenuItem, vaccumMenuItem;
+	JMenu settingsMenu, dbMenu;
 	
 	JButton processAll;
 	
@@ -65,7 +66,10 @@ public class MmutGui extends JFrame {
 	private void setupMenuBar() {
 		menuBar  = new JMenuBar();
 		settingsMenu = new JMenu("Settings");
+		dbMenu = new JMenu("DB");
+		
 		sourcesMenuItem = new JMenuItem("Sources");
+		vaccumMenuItem = new JMenuItem("Vacuum");
 		
 		sourcesMenuItem.addActionListener(new ActionListener() {
 			@Override
@@ -74,8 +78,18 @@ public class MmutGui extends JFrame {
 			}
 		});
 		
+		vaccumMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Persistence.getInstance().vacuumDb();
+			}
+		});
+		
 		menuBar.add(settingsMenu);
+		menuBar.add(dbMenu);
+		
 		settingsMenu.add(sourcesMenuItem);
+		dbMenu.add(vaccumMenuItem);
 		
 		this.setJMenuBar(menuBar);
 		menuBar.validate();
