@@ -117,14 +117,17 @@ public class SourceEditor extends JFrame {
 	
 	private void createSourceDialog(Webpage page) {
 		if(page == null) {
-			page = new Webpage("", "", "", 0, "");
+			page = new Webpage("", "", "", "", 0, 0);
 		}
 		
 		JTextField sourceName = new JTextField(page.getName());
 		JTextField sourceUrl = new JTextField(page.getBaseUrl());
 		JTextField cssSelector = new JTextField(page.getElementRegex());
+		JTextField pageStart = new JTextField(String.valueOf(page.getPageStartIndex()));
+		JTextField pageEnd = new JTextField(String.valueOf(page.getPageEndIndex()));
+		JTextField pagePattern = new JTextField(page.getPagePattern());
 		
-		Object[] message = {"Source name: ", sourceName, "Source URL: ", sourceUrl, "CSS selector: ", cssSelector};
+		Object[] message = {"Source name: ", sourceName, "Source URL: ", sourceUrl, "CSS selector: ", cssSelector, "Page pattern: ", pagePattern, "Page start index: ", pageStart, "Page end index", pageEnd};
 		JOptionPane pane = new JOptionPane(message,  JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 		JDialog getTopicDialog =  pane.createDialog(null, "Add source");
 		getTopicDialog.setVisible(true);
@@ -136,6 +139,9 @@ public class SourceEditor extends JFrame {
 			page.setName(sourceName.getText());
 			page.setBaseUrl(sourceUrl.getText());
 			page.setElementRegex(cssSelector.getText());
+			page.setPageStartIndex(sanitizeInteger(pageStart.getText()));
+			page.setPageEndIndex(sanitizeInteger(pageEnd.getText()));
+			page.setPagePattern(pagePattern.getText());
 			
 			try {
 				Persistence.getInstance().saveWebpage(page);
@@ -148,6 +154,18 @@ public class SourceEditor extends JFrame {
 		} else {
 			logger.info("User aborted source entry");
 		}
+	}
+	
+	private int sanitizeInteger(String intAsString) {
+		int validInt = 0;
+
+		try{
+		validInt = Integer.parseInt(intAsString);
+		}catch (NumberFormatException nfe) {
+			logger.warn("Entered value {} was not an integer, using 0.", intAsString);
+		}
+		
+		return validInt;
 	}
 	
 	private void createDefinitionDialog(Webpage parent, MediaDefinition definition) {

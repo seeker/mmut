@@ -39,7 +39,9 @@ public class Webpage {
 	@DatabaseField(canBeNull=false)
 	private String pagePattern;
 	@DatabaseField(canBeNull=false)
-	private int numOfPages;
+	private int pageStartIndex;
+	@DatabaseField(canBeNull=false)
+	private int pageEndIndex;
 	@ForeignCollectionField(eager=true)
 	private Collection<MediaDefinition> mediaDefinitions;
 	
@@ -49,16 +51,20 @@ public class Webpage {
 	@Deprecated
 	public Webpage() {}
 	
-	public Webpage(String name, String baseUrl, String pagePattern, int numOfPages,
-			String elementRegex) {
+	public Webpage(String name, String elementRegex, String baseUrl,
+			String pagePattern, int pageStartIndex, int pageEndIndex) {
+		super();
 		this.name = name;
+		this.elementRegex = elementRegex;
 		this.baseUrl = baseUrl;
 		this.pagePattern = pagePattern;
-		this.numOfPages = numOfPages;
-		this.elementRegex = elementRegex;
+		this.pageStartIndex = pageStartIndex;
+		this.pageEndIndex = pageEndIndex;
 		mediaDefinitions = new LinkedList<>();
 	}
-	
+
+
+
 	@Override
 	public String toString() {
 		return name;
@@ -95,15 +101,23 @@ public class Webpage {
 	public void setPagePattern(String pagePattern) {
 		this.pagePattern = pagePattern;
 	}
-
-	public int getNumOfPages() {
-		return numOfPages;
-	}
-
-	public void setNumOfPages(int numOfPages) {
-		this.numOfPages = numOfPages;
-	}
 	
+	public int getPageStartIndex() {
+		return pageStartIndex;
+	}
+
+	public void setPageStartIndex(int pageStartIndex) {
+		this.pageStartIndex = pageStartIndex;
+	}
+
+	public int getPageEndIndex() {
+		return pageEndIndex;
+	}
+
+	public void setPageEndIndex(int pageEndIndex) {
+		this.pageEndIndex = pageEndIndex;
+	}
+
 	public void addDefinition(MediaDefinition md) {
 		mediaDefinitions.add(md);
 	}
