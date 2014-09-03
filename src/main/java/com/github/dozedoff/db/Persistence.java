@@ -1,20 +1,8 @@
-/*  Copyright (C) 2013  Nicholas Wright
-    
-    This file is part of mmut - Multi-media update tracker
-    
-    mmut is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+/* The MIT License (MIT)
+ * Copyright (c) 2014 Nicholas Wright
+ * http://opensource.org/licenses/MIT
+ */
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 package com.github.dozedoff.db;
 
 import java.sql.SQLException;
@@ -36,12 +24,12 @@ import com.j256.ormlite.table.TableUtils;
 public class Persistence {
 	private static Persistence instance = null;
 	private static Logger logger = LoggerFactory.getLogger(Persistence.class);
-	
+
 	private final String dbUrl = "jdbc:sqlite:mmut.db";
 	private Dao<Webpage, Integer> webPageDao;
 	private Dao<MediaDefinition, Integer> definitionDao;
 	ConnectionSource cs;
-	
+
 	private Persistence() {
 		try {
 			cs = new JdbcConnectionSource(dbUrl);
@@ -52,19 +40,19 @@ public class Persistence {
 			System.exit(1);
 		}
 	}
-	
+
 	public static Persistence getInstance() {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new Persistence();
 		}
-		
+
 		return instance;
 	}
-	
+
 	public void saveWebpage(Webpage page) throws SQLException {
 		webPageDao.createOrUpdate(page);
 	}
-	
+
 	public List<Webpage> loadWebpage() {
 		List<Webpage> pages = new LinkedList<Webpage>();
 		try {
@@ -73,10 +61,10 @@ public class Persistence {
 		} catch (SQLException e) {
 			logger.warn("Failed to load sources {}", e);
 		}
-		
+
 		return pages;
 	}
-	
+
 	public void deleteWebpage(Webpage page) {
 		try {
 			webPageDao.delete(page);
@@ -84,7 +72,7 @@ public class Persistence {
 			logger.warn("Failed to delete entry {}", page.getName(), e);
 		}
 	}
-	
+
 	public void saveDefinition(MediaDefinition definition) {
 		try {
 			definitionDao.createOrUpdate(definition);
@@ -92,7 +80,7 @@ public class Persistence {
 			logger.warn("Failed to save definition for {}", definition.getParent().getName(), e);
 		}
 	}
-	
+
 	public void deleteDefinition(MediaDefinition definition) {
 		try {
 			definitionDao.delete(definition);
@@ -100,27 +88,27 @@ public class Persistence {
 			logger.warn("Failed to delete defintion for {}", definition.getParent().getName(), e);
 		}
 	}
-	
-	public void vacuumDb(){
-		if(cs == null) {
+
+	public void vacuumDb() {
+		if (cs == null) {
 			return;
 		}
-		
+
 		try {
 			DatabaseConnection dbc = cs.getReadWriteConnection();
-			dbc.executeStatement("VACUUM" , DatabaseConnection.DEFAULT_RESULT_FLAGS);
+			dbc.executeStatement("VACUUM", DatabaseConnection.DEFAULT_RESULT_FLAGS);
 			cs.releaseConnection(dbc);
 		} catch (SQLException e) {
 			logger.warn("Vacuum operation failed.", e);
 		}
 	}
-		
+
 	private void setupDatabase(ConnectionSource cs) throws SQLException {
 		logger.info("Setting up database tables...");
 		TableUtils.createTableIfNotExists(cs, Webpage.class);
 		TableUtils.createTableIfNotExists(cs, MediaDefinition.class);
 	}
-	
+
 	private void setupDAO(ConnectionSource cs) throws SQLException {
 		logger.info("Setting up DAO...");
 		definitionDao = DaoManager.createDao(cs, MediaDefinition.class);
